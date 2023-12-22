@@ -5,19 +5,19 @@
         <el-card>
           <div slot="header">
             Subscription Converter
-            <svg-icon icon-class="github" style="margin-left: 20px" @click="goToProject" />
+            <svg-icon icon-class="github" style="margin-left: 20px" @click="goToProject"/>
 
             <div style="display: inline-block; position:absolute; right: 20px">{{ backendVersion }}</div>
           </div>
           <el-container>
-            <el-form :model="form" label-width="80px" label-position="left" style="width: 100%">
+            <el-form :model="form" label-position="left" label-width="80px" style="width: 100%">
               <el-form-item label="模式设置:">
                 <el-radio v-model="advanced" label="1">基础模式</el-radio>
                 <el-radio v-model="advanced" label="2">进阶模式</el-radio>
               </el-form-item>
               <el-form-item label="订阅链接:">
-                <el-input v-model="form.sourceSubUrl" type="textarea" rows="3"
-                  placeholder="支持订阅或ss/ssr/vmess链接，多个链接每行一个或用 | 分隔" @blur="saveSubUrl" />
+                <el-input v-model="form.sourceSubUrl" placeholder="支持订阅或ss/ssr/vmess链接，多个链接每行一个或用 | 分隔" rows="3"
+                          type="textarea" @blur="saveSubUrl"/>
               </el-form-item>
               <el-form-item label="客户端:">
                 <el-select v-model="form.clientType" style="width: 100%">
@@ -27,35 +27,36 @@
 
               <div v-if="advanced === '2'">
                 <el-form-item label="后端地址:">
-                  <el-autocomplete style="width: 100%" v-model="form.customBackend" :fetch-suggestions="backendSearch"
-                    placeholder="动动小手，（建议）自行搭建后端服务。例：http://127.0.0.1:25500/sub?">
-                    <el-button slot="append" @click="gotoGayhub" icon="el-icon-link">前往项目仓库</el-button>
+                  <el-autocomplete v-model="form.customBackend" :fetch-suggestions="backendSearch" placeholder="动动小手，（建议）自行搭建后端服务。例：http://127.0.0.1:25500/sub?"
+                                   style="width: 100%">
+                    <el-button slot="append" icon="el-icon-link" @click="gotoGayhub">前往项目仓库</el-button>
                   </el-autocomplete>
                 </el-form-item>
                 <el-form-item label="远程配置:">
-                  <el-select v-model="form.remoteConfig" allow-create filterable placeholder="请选择" style="width: 100%">
+                  <el-select v-model="form.remoteConfig" allow-create filterable placeholder="请选择"
+                             style="width: 100%">
                     <el-option-group v-for="group in options.remoteConfig" :key="group.label" :label="group.label">
                       <el-option v-for="item in group.options" :key="item.value" :label="item.label"
-                        :value="item.value"></el-option>
+                                 :value="item.value"></el-option>
                     </el-option-group>
-                    <el-button slot="append" @click="gotoRemoteConfig" icon="el-icon-link">配置示例</el-button>
+                    <el-button slot="append" icon="el-icon-link" @click="gotoRemoteConfig">配置示例</el-button>
                   </el-select>
                 </el-form-item>
                 <el-form-item label="Include:">
-                  <el-input v-model="form.includeRemarks" placeholder="节点名包含的关键字，支持正则" />
+                  <el-input v-model="form.includeRemarks" placeholder="节点名包含的关键字，支持正则"/>
                 </el-form-item>
                 <el-form-item label="Exclude:">
-                  <el-input v-model="form.excludeRemarks" placeholder="节点名不包含的关键字，支持正则" />
+                  <el-input v-model="form.excludeRemarks" placeholder="节点名不包含的关键字，支持正则"/>
                 </el-form-item>
                 <el-form-item label="FileName:">
-                  <el-input v-model="form.filename" placeholder="返回的订阅文件名" />
+                  <el-input v-model="form.filename" placeholder="返回的订阅文件名"/>
                 </el-form-item>
                 <el-form-item label-width="0px">
                   <el-row type="flex">
                     <el-col>
-                      <el-checkbox v-model="form.nodeList" label="输出为 Node List" border></el-checkbox>
+                      <el-checkbox v-model="form.nodeList" border label="输出为 Node List"></el-checkbox>
                     </el-col>
-                    <el-popover placement="bottom" v-model="form.extraset">
+                    <el-popover v-model="form.extraset" placement="bottom">
                       <el-row>
                         <el-checkbox v-model="form.emoji" label="Emoji"></el-checkbox>
                       </el-row>
@@ -63,7 +64,7 @@
                         <el-checkbox v-model="form.scv" label="跳过证书验证"></el-checkbox>
                       </el-row>
                       <el-row>
-                        <el-checkbox v-model="form.udp" @change="needUdp = true" label="启用 UDP"></el-checkbox>
+                        <el-checkbox v-model="form.udp" label="启用 UDP" @change="needUdp = true"></el-checkbox>
                       </el-row>
                       <el-row>
                         <el-checkbox v-model="form.appendType" label="节点类型"></el-checkbox>
@@ -99,35 +100,42 @@
               </el-divider>
 
               <el-form-item label="定制订阅:">
-                <el-input class="copy-content" disabled v-model="customSubUrl">
-                  <el-button slot="append" v-clipboard:copy="customSubUrl" v-clipboard:success="onCopy" ref="copy-btn"
-                    icon="el-icon-document-copy">复制</el-button>
+                <el-input v-model="customSubUrl" class="copy-content" disabled>
+                  <el-button ref="copy-btn" slot="append" v-clipboard:copy="customSubUrl" v-clipboard:success="onCopy"
+                             icon="el-icon-document-copy">复制
+                  </el-button>
                 </el-input>
               </el-form-item>
               <el-form-item label="订阅短链:">
-                <el-input class="copy-content" disabled v-model="curtomShortSubUrl">
-                  <el-button slot="append" v-clipboard:copy="curtomShortSubUrl" v-clipboard:success="onCopy"
-                    ref="copy-btn" icon="el-icon-document-copy">复制</el-button>
+                <el-input v-model="curtomShortSubUrl" class="copy-content" disabled>
+                  <el-button ref="copy-btn" slot="append" v-clipboard:copy="curtomShortSubUrl"
+                             v-clipboard:success="onCopy" icon="el-icon-document-copy">复制
+                  </el-button>
                 </el-input>
               </el-form-item>
 
               <el-form-item label-width="0px" style="margin-top: 40px; text-align: center">
-                <el-button style="width: 140px" type="danger" @click="makeUrl"
-                  :disabled="form.sourceSubUrl.length === 0">生成订阅链接</el-button>
-                <el-button style="width: 140px" type="danger" @click="makeShortUrl" :loading="loading"
-                  :disabled="customSubUrl.length === 0">生成短链接</el-button>
+                <el-button :disabled="form.sourceSubUrl.length === 0" style="width: 140px" type="danger"
+                           @click="makeUrl">生成订阅链接
+                </el-button>
+                <el-button :disabled="customSubUrl.length === 0" :loading="loading" style="width: 140px" type="danger"
+                           @click="makeShortUrl">生成短链接
+                </el-button>
                 <!-- <el-button style="width: 140px" type="primary" @click="surgeInstall" icon="el-icon-connection">一键导入Surge</el-button> -->
               </el-form-item>
 
               <el-form-item label-width="0px" style="text-align: center">
-                <el-button style="width: 140px" type="primary" @click="dialogUploadConfigVisible = true"
-                  icon="el-icon-upload" :loading="loading">上传配置</el-button>
-                <el-button style="width: 140px" type="primary" @click="clashInstall" icon="el-icon-connection"
-                  :disabled="customSubUrl.length === 0">一键导入 Clash</el-button>
+                <el-button :loading="loading" icon="el-icon-upload" style="width: 140px"
+                           type="primary" @click="dialogUploadConfigVisible = true">上传配置
+                </el-button>
+                <el-button :disabled="customSubUrl.length === 0" icon="el-icon-connection" style="width: 140px" type="primary"
+                           @click="clashInstall">一键导入 Clash
+                </el-button>
               </el-form-item>
               <el-form-item label-width="0px" style="text-align: center">
-                <el-button style="width: 290px" type="primary" @click="dialogLoadConfigVisible = true"
-                  icon="el-icon-copy-document" :loading="loading">从 URL 解析</el-button>
+                <el-button :loading="loading" icon="el-icon-copy-document" style="width: 290px"
+                           type="primary" @click="dialogLoadConfigVisible = true">从 URL 解析
+                </el-button>
               </el-form-item>
             </el-form>
           </el-container>
@@ -135,40 +143,40 @@
       </el-col>
     </el-row>
 
-    <el-dialog :visible.sync="dialogUploadConfigVisible" :show-close="false" :close-on-click-modal="false"
-      :close-on-press-escape="false" width="700px">
+    <el-dialog :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false"
+               :visible.sync="dialogUploadConfigVisible" width="700px">
       <div slot="title">
         Remote config upload
-        <el-popover trigger="hover" placement="right" style="margin-left: 10px">
-          <el-link type="primary" :href="sampleConfig" target="_blank" icon="el-icon-info">参考配置</el-link>
-          <i class="el-icon-question" slot="reference"></i>
+        <el-popover placement="right" style="margin-left: 10px" trigger="hover">
+          <el-link :href="sampleConfig" icon="el-icon-info" target="_blank" type="primary">参考配置</el-link>
+          <i slot="reference" class="el-icon-question"></i>
         </el-popover>
       </div>
       <el-form label-position="left">
         <el-form-item prop="uploadConfig">
-          <el-input v-model="uploadConfig" type="textarea" :autosize="{ minRows: 15, maxRows: 15 }" maxlength="5000"
-            show-word-limit></el-input>
+          <el-input v-model="uploadConfig" :autosize="{ minRows: 15, maxRows: 15 }" maxlength="5000" show-word-limit
+                    type="textarea"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="uploadConfig = ''; dialogUploadConfigVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirmUploadConfig" :disabled="uploadConfig.length === 0">确 定</el-button>
+        <el-button :disabled="uploadConfig.length === 0" type="primary" @click="confirmUploadConfig">确 定</el-button>
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogLoadConfigVisible" :show-close="false" :close-on-click-modal="false"
-      :close-on-press-escape="false" width="700px">
+    <el-dialog :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false"
+               :visible.sync="dialogLoadConfigVisible" width="700px">
       <div slot="title">
         解析 Subconverter 链接
       </div>
-      <el-form label-position="left" :inline="true" >
-        <el-form-item prop="uploadConfig" label="订阅链接：" label-width="85px">
+      <el-form :inline="true" label-position="left">
+        <el-form-item label="订阅链接：" label-width="85px" prop="uploadConfig">
           <el-input v-model="loadConfig" style="width: 565px"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="loadConfig = ''; dialogLoadConfigVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirmLoadConfig" :disabled="loadConfig.length === 0">确 定</el-button>
+        <el-button :disabled="loadConfig.length === 0" type="primary" @click="confirmLoadConfig">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -210,7 +218,7 @@ export default {
           ClashR: "clashr",
           Surge2: "surge&ver=2",
         },
-        backendOptions: [{ value: "http://127.0.0.1:25500/sub?" }],
+        backendOptions: [{value: "http://127.0.0.1:25500/sub?"}],
         remoteConfig: [
           {
             label: "universal",
@@ -279,6 +287,116 @@ export default {
                 label: "Basic(仅GEOIP CN + Final)",
                 value:
                   "https://cdn.jsdelivr.net/gh/SleepyHeeead/subconverter-config@master/remote-config/special/basic.ini"
+              }
+            ]
+          },
+          {
+            label: "ACL4SSR",
+            options: [
+              {
+                label: "ACL4SSR_Online 默认版 分组比较全 (与 Github 同步)",
+                value:
+                  "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online.ini"
+              },
+              {
+                label: "ACL4SSR_Online_AdblockPlus 更多去广告 (与 Github 同步)",
+                value:
+                  "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_AdblockPlus.ini"
+              },
+              {
+                label: "ACL4SSR_Online_NoAuto 无自动测速 (与 Github 同步)",
+                value:
+                  "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_NoAuto.ini"
+              },
+              {
+                label: "ACL4SSR_Online_NoReject 无广告拦截规则 (与 Github 同步)",
+                value:
+                  "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_NoReject.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Mini 精简版 (与 Github 同步)",
+                value:
+                  "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Mini_AdblockPlus.ini 精简版 更多去广告 (与 Github 同步)",
+                value:
+                  "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_AdblockPlus.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Mini_NoAuto.ini 精简版 不带自动测速 (与 Github 同步)",
+                value:
+                  "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_NoAuto.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Mini_Fallback.ini 精简版 带故障转移 (与 Github 同步)",
+                value:
+                  "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_Fallback.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Mini_MultiMode.ini 精简版 自动测速、故障转移、负载均衡 (与 Github 同步)",
+                value:
+                  "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiMode.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Full 全分组 重度用户使用 (与 Github 同步)",
+                value:
+                  "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Full_NoAuto.ini 全分组 无自动测速 重度用户使用 (与 Github 同步)",
+                value:
+                  "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_NoAuto.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Full_AdblockPlus 全分组 重度用户使用 更多去广告 (与 Github 同步)",
+                value:
+                  "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_AdblockPlus.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Full_Netflix 全分组 重度用户使用 奈飞全量 (与 Github 同步)",
+                value:
+                  "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_Netflix.ini"
+              },
+              {
+                label: "ACL4SSR 本地 默认版 分组比较全",
+                value: "config/ACL4SSR.ini"
+              },
+              {
+                label: "ACL4SSR_Mini 本地 精简版",
+                value: "config/ACL4SSR_Mini.ini"
+              },
+              {
+                label: "ACL4SSR_Mini_NoAuto.ini 本地 精简版+无自动测速",
+                value: "config/ACL4SSR_Mini_NoAuto.ini"
+              },
+              {
+                label: "ACL4SSR_Mini_Fallback.ini 本地 精简版+fallback",
+                value: "config/ACL4SSR_Mini_Fallback.ini"
+              },
+              {
+                label: "ACL4SSR_BackCN 本地 回国",
+                value: "config/ACL4SSR_BackCN.ini"
+              },
+              {
+                label: "ACL4SSR_NoApple 本地 无苹果分流",
+                value: "config/ACL4SSR_NoApple.ini"
+              },
+              {
+                label: "ACL4SSR_NoAuto 本地 无自动测速 ",
+                value: "config/ACL4SSR_NoAuto.ini"
+              },
+              {
+                label: "ACL4SSR_NoAuto_NoApple 本地 无自动测速&无苹果分流",
+                value: "config/ACL4SSR_NoAuto_NoApple.ini"
+              },
+              {
+                label: "ACL4SSR_NoMicrosoft 本地 无微软分流",
+                value: "config/ACL4SSR_NoMicrosoft.ini"
+              },
+              {
+                label: "ACL4SSR_WithGFW 本地 GFW 列表",
+                value: "config/ACL4SSR_WithGFW.ini"
               }
             ]
           }
@@ -502,7 +620,7 @@ export default {
         type: "warning",
         message: h(
           "i",
-          { style: "color: teal" },
+          {style: "color: teal"},
           "各种订阅链接（短链接服务除外）生成纯前端实现，无隐私问题。默认提供后端转换服务，隐私担忧者请自行搭建后端服务。"
         )
       });
@@ -541,10 +659,10 @@ export default {
         });
     },
     /**
- * Asynchronously analyzes the URL.
- *
- * @return {Promise<string>} The result of the analysis.
- */
+     * Asynchronously analyzes the URL.
+     *
+     * @return {Promise<string>} The result of the analysis.
+     */
     async analyzeUrl() {
       // Check if `loadConfig` includes "target"
       if (this.loadConfig.includes("target")) {
